@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MusicVerse - Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Basic Reset and Fonts */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #231942;
+      color: white;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    
+    /* Hero Section */
+    .hero {
+      width: 100%;
+      height: 90vh;
+      background: url('https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=1600&auto=format') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      background-position: center top;
+    }
+    .hero-content {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 2rem 3rem;
+      border-radius: 1rem;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .btn-primary {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      background: #BE95C4;
+      color: white;
+      font-weight: bold;
+      border-radius: 2rem;
+      transition: background 0.3s;
+    }
+    .btn-primary:hover {
+      background: #5E548E;
+    }
+
+    /* Featured Albums */
+    .featured-section {
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+    .featured-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 2rem 0;
+    }
+    .album {
+      background: white;
+      color: #231942;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+    .album:hover {
+      transform: translateY(-5px);
+    }
+    .album-img img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+    .album-content {
+      padding: 1rem;
+    }
+    .album-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #5E548E;
+    }
+    .album-artist {
+      font-size: 1rem;
+      color: #BE95C4;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Discover Legendary Analog Recordings 🎛️</h1>
+      <p>Explore pure analog vinyl classics, remastered editions, and collector gems.</p>
+      <a href="albums.html" class="btn-primary">Browse Vinyls & Albums</a>
+    </div>
+  </section>
+
+  <!-- FEATURED SECTION -->
+  <section class="featured-section" id="featured">
+    <h2>Featured Albums</h2>
+    <div class="album-grid" id="featured-album-grid">
+      <!-- Featured albums will be injected here -->
+    </div>
+  </section>
+
+  <script type="module">
+    import { fetchAlbumDetailsFromDiscogs } from './js/discogs-api.js';
+    import { detectAnalogOrDigital } from './js/recording-utils.js'; // Optional if separated
+
+    async function loadFeaturedAlbums() {
+      const featuredAlbums = [
+        { name: "A Hard Day's Night", artist: "The Beatles" },
+        { name: "Kind of Blue", artist: "Miles Davis" },
+        { name: "Rumours", artist: "Fleetwood Mac" },
+        { name: "Thriller", artist: "Michael Jackson" },
+      ];
+
+      const featuredGrid = document.getElementById('featured-album-grid');
+      featuredGrid.innerHTML = '';
+
+      for (const album of featuredAlbums) {
+        const discogsDetails = await fetchAlbumDetailsFromDiscogs(`${album.name} ${album.artist}`);
+        const recordingInfo = detectAnalogOrDigital(discogsDetails?.notes || "");
+
+        const card = `
+          <div class="album">
+            <div class="album-img">
+              <img src="${discogsDetails?.cover_image || 'https://via.placeholder.com/500x500.png?text=No+Cover'}" alt="${album.name}">
+            </div>
+            <div class="album-content">
+              <h3 class="album-title">${album.name}</h3>
+              <p class="album-artist">${album.artist}</p>
+              <p class="album-artist">${discogsDetails?.year || 'Year Unknown'} • ${discogsDetails?.country || 'Country Unknown'}</p>
+              <p class="album-artist">${recordingInfo.label}</p>
+            </div>
+          </div>
+        `;
+        featuredGrid.innerHTML += card;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadFeaturedAlbums);
+  </script>
+
+</body>
+</html>

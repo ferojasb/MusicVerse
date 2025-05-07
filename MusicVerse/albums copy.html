@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MusicVerse - Your Music Universe</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+        --primary: #BE95C4;     /* Light purple - for accents */
+        --secondary: #5E548E;   /* Medium purple - for secondary elements */
+        --dark: #231942;       /* Dark purple - for background */
+        --light: #FFFFFF;      /* White for text */
+        --surface: #9F86C0;    /* Medium-light purple for cards and surfaces */
+        --surface-hover: #BE95C4; /* Light purple for hover states */
+        --text-secondary: #E0B1CB;/* Pink-purple for secondary text */
+        --gradient: linear-gradient(135deg, #BE95C4, #5E548E);
+        --input-bg: rgba(255, 255, 255, 0.1);
+        --select-bg: rgba(94, 84, 142, 0.95); /* Based on secondary color */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--dark);
+      color: var(--light);
+      line-height: 1.6;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 250px;
+        background-color: #5E548E;
+        color: var(--light);
+        padding: 20px 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .logo img {
+        width: 200px;  /* Changed from 200px to 32px to match the desired size */
+        height: 200px;  /* Changed from 200px to 32px to match the desired size */
+        object-fit: contain;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: var(--light);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        opacity: 0.8;
+    }
+
+    .menu-item:hover {
+        background-color: var(--surface-hover);
+        opacity: 1;
+    }
+
+    .menu-item.active {
+        background-color: var(--surface);
+        opacity: 1;
+        position: relative;
+    }
+
+    .menu-item.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: var(--primary);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 1rem 2rem;
+      background-color: #231942;  /* Dark purple for header */
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      gap: 2rem;
+    }
+
+    .search-bar {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--input-bg);
+      border-radius: 2rem;
+      padding: 0.5rem 1.5rem;
+      gap: 1rem;
+    }
+
+    .search-bar input {
+      background: none;
+      border: none;
+      color: var(--light);
+      font-size: 1rem;
+      width: 100%;
+      outline: none;
+    }
+
+    .search-bar i {
+      color: var(--text-secondary);
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-icon {
+      background: none;
+      border: none;
+      color: var(--light);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      aspect-ratio: 1;
+      transition: background-color 0.3s;
+    }
+
+    .btn-icon:hover {
+      background-color: var(--surface-hover);
+    }
+    
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .view-options button {
+      background: none;
+      border: none;
+      color: var(--light);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      aspect-ratio: 1;
+      transition: background-color 0.3s;
+    }
+
+    .view-options button.active {
+      background-color: var(--surface-hover);
+    }
+
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .album {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s;
+      position: relative;
+    }
+
+    .price-tag {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      background: var(--primary);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 0 20px 20px 0;
+      font-weight: 500;
+    }
+
+    .album-img {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+    }
+
+    .album-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .album:hover {
+      transform: translateY(-5px);
+    }
+
+    .album:hover .album-img img {
+      transform: scale(1.05);
+    }
+
+    .album-content {
+      padding: 1rem;
+      background: white;
+      color: var(--dark);
+    }
+
+    .album-title {
+      color: var(--secondary);
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .album-artist {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 2rem;
+    }
+
+    .loader-text {
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .spinner {
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: var(--secondary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 3rem 0;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    footer {
+      margin-top: 4rem;
+      padding: 2rem 5%;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .search-form {
+        flex-direction: column;
+      }
+      
+      .form-group {
+        width: 100%;
+      }
+    }
+
+    /* Add new styles for detailed info */
+    .album-details {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .catalog-number {
+        font-family: monospace;
+        background: rgba(0,0,0,0.05);
+        padding: 2px 4px;
+        border-radius: 3px;
+    }
+
+    /* Add style for recording type */
+    .recording-type {
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        border-radius: 12px;
+        display: inline-block;
+        margin-top: 8px;
+    }
+
+    .recording-type.analog {
+        background: var(--primary);
+        color: white;
+    }
+
+    .recording-type.digital {
+        background: var(--secondary);
+        color: white;
+    }
+
+    .recording-type.unknown {
+        background: rgba(0,0,0,0.1);
+        color: var(--text-secondary);
+    }
+
+    .album-details p {
+        margin: 4px 0;
+        color: var(--text-secondary);
+    }
+
+    .album-details p:first-child {
+        color: var(--secondary);
+        font-weight: 500;
+    }
+
+    .price-tag {
+        background: var(--secondary);
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .fa-stars::before {
+        content: "✨";
+        font-style: normal;
+    }
+
+    .album-price {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--secondary);
+        margin: 1rem 0;
+        text-align: right;
+    }
+
+    .album-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .add-to-cart {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .add-to-cart:hover {
+        background: var(--surface);
+        transform: translateY(-2px);
+    }
+
+    .add-to-cart i {
+        font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+          <img src="https://i.postimg.cc/JzYFqcwL/Musicverselogo.png" alt="MusicVerse Logo">
+      </div>
+      <div class="sidebar-menu">
+          <a href="index.html" class="menu-item">
+              <i class="fas fa-home"></i>
+              <span>Home</span>
+          </a>
+          <a href="albums.html" class="menu-item active">
+              <i class="fas fa-compact-disc"></i>
+              <span>Vinyls & Albums</span>
+          </a>
+          <a href="#" class="menu-item">
+              <i class="fas fa-stars"></i>
+              <span>New Releases</span>
+          </a>
+          <a href="#" class="menu-item">
+              <i class="fas fa-tags"></i>
+              <span>Offers</span>
+          </a>
+      </div>
+  </div>
+  <div class="main-content">
+
+      </header>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <header>
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Search for artists, albums, or songs...">
+          <button id="search-button"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="header-controls">
+          <button class="btn-icon"><i class="fas fa-bell"></i></button>
+          <button class="btn-icon"><i class="fas fa-user"></i></button>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <div id="loadingIndicator" class="loader" style="display: none;">
+          <div class="spinner"></div>
+          <span class="loader-text">Loading albums...</span>
+        </div>
+        
+        <div id="errorMessage" class="no-results" style="display: none;"></div>
+
+        <div class="section-header">
+          <h2 id="pageTitle">Top Albums</h2>
+          <div class="view-options">
+            <button><i class="fas fa-list"></i></button>
+            <button class="active"><i class="fas fa-th"></i></button>
+          </div>
+        </div>
+
+        <div class="album-grid" id="album-grid">
+          <!-- Albums will be loaded dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chatbot -->
+  <!-- Copy chatbot HTML from template -->
+
+  <script type="module">
+    import { fetchAlbumDetailsFromDiscogs } from './js/discogs-api.js';
+
+    const LASTFM_API = 'https://ws.audioscrobbler.com/2.0/';
+    const LASTFM_KEY = 'b4d3a8f2413b1000bc46b35c2b54c396';
+    const searchInput = document.querySelector('#search-input');
+    const searchButton = document.querySelector('#search-button');
+    const loadingIndicator = document.querySelector('#loadingIndicator');
+    const errorMessage = document.querySelector('#errorMessage');
+    const albumGrid = document.querySelector('#album-grid');
+    const pageTitle = document.querySelector('#pageTitle');
+
+    function getAlbumImage(album) {
+        if (album.image && album.image.length > 0) {
+            const images = album.image;
+            const largeImage = images.find(img => img.size === 'extralarge');
+            if (largeImage && largeImage['#text']) {
+                return largeImage['#text'];
+            }
+        }
+        return 'https://via.placeholder.com/500x500.png?text=No+Cover+Available';
+    }
+
+    async function getTopAlbums() {
+        try {
+            const response = await fetch(
+                `${LASTFM_API}?method=chart.gettopartists&api_key=${LASTFM_KEY}&format=json&limit=12`
+            );
+
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const data = await response.json();
+            
+            const artistPromises = data.artists.artist.slice(0, 6).map(async (artist) => {
+                const albumResponse = await fetch(
+                    `${LASTFM_API}?method=artist.gettopalbums&artist=${encodeURIComponent(artist.name)}&api_key=${LASTFM_KEY}&format=json&limit=1`
+                );
+                const albumData = await albumResponse.json();
+                return albumData.topalbums?.album?.[0] || null;
+            });
+
+            const albums = (await Promise.all(artistPromises)).filter(album => album !== null);
+            return albums;
+        } catch (error) {
+            console.error('Error fetching top albums:', error);
+            throw error;
+        }
+    }
+
+    async function searchAlbums(query) {
+        try {
+            const response = await fetch(
+                `${LASTFM_API}?method=album.search&album=${encodeURIComponent(query)}&api_key=${LASTFM_KEY}&format=json&limit=6`
+            );
+
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const data = await response.json();
+            return data.results.albummatches.album;
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw error;
+        }
+    }
+
+    async function renderAlbums(albums, isSearch = false) {
+        if (!albums || albums.length === 0) {
+            errorMessage.textContent = 'No albums found';
+            errorMessage.style.display = 'block';
+            albumGrid.innerHTML = '';
+            return;
+        }
+
+        pageTitle.textContent = isSearch ? 'Search Results' : 'Top Albums';
+        loadingIndicator.style.display = 'flex';
+        
+        try {
+            // Process albums in smaller batches to avoid overwhelming the API
+            const BATCH_SIZE = 2;
+            const albumBatches = [];
+            
+            for (let i = 0; i < albums.length; i += BATCH_SIZE) {
+                const batch = albums.slice(i, i + BATCH_SIZE);
+                const batchHTML = await Promise.all(
+                    batch.map(async (album) => {
+                        try {
+                            const discogsDetails = await fetchAlbumDetailsFromDiscogs(
+                                `${album.name} ${album.artist.name || album.artist}`
+                            );
+                            
+                            if (!discogsDetails) return '';
+
+                            const price = (Math.random() * 80 + 20).toFixed(2); // Random price between 20-100
+
+                            return `
+                                <div class="album">
+                                    <div class="price-tag">${discogsDetails.format || 'Album'}</div>
+                                    <div class="album-img">
+                                        <img src="${getAlbumImage(album)}" 
+                                             alt="${album.name}"
+                                             onerror="this.src='https://via.placeholder.com/500x500.png?text=No+Cover+Available'"/>
+                                    </div>
+                                    <div class="album-content">
+                                        <h3 class="album-title">${album.name}</h3>
+                                        <p class="album-artist">${album.artist.name || album.artist}</p>
+                                        <div class="album-details">
+                                            <p>${discogsDetails.year} • ${discogsDetails.country}</p>
+                                            <p>Label: ${discogsDetails.label}</p>
+                                            <p class="catalog-number">${discogsDetails.catalog_number}</p>
+                                            <p class="recording-type ${discogsDetails.recordingType.type}">
+                                                ${discogsDetails.recordingType.label}
+                                            </p>
+                                        </div>
+                                        <div class="album-price">€${price}</div>
+                                        <div class="album-footer">
+                                            <button class="add-to-cart">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                ADD TO CART
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        } catch (error) {
+                            console.error('Error processing album:', error);
+                            return ''; // Skip this album if there's an error
+                        }
+                    })
+                );
+                albumBatches.push(batchHTML);
+                
+                // Update the grid with each batch
+                albumGrid.innerHTML = albumBatches.flat().join('');
+                
+                // Small delay between batches
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        } catch (error) {
+            console.error('Error rendering albums:', error);
+            errorMessage.textContent = 'Error rendering albums. Please try again.';
+            errorMessage.style.display = 'block';
+        } finally {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
+    async function handleSearch() {
+        const query = searchInput.value.trim();
+        if (query) {
+            loadingIndicator.style.display = 'flex';
+            try {
+                const albums = await searchAlbums(query);
+                await renderAlbums(albums, true);
+            } catch (error) {
+                errorMessage.textContent = 'Error searching for albums. Please try again.';
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+    }
+
+    function checkForSearchQuery() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('search');
+        
+        if (searchQuery) {
+            // Set the search input value
+            const searchInput = document.querySelector('#search-input');
+            searchInput.value = searchQuery;
+            
+            // Trigger the search
+            handleSearch();
+        }
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('keyup', e => e.key === 'Enter' && handleSearch());
+    searchButton.addEventListener('click', handleSearch);
+
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const isHome = item.querySelector('i').classList.contains('fa-home');
+            document.querySelector('.menu-item.active')?.classList.remove('active');
+            item.classList.add('active');
+
+            if (isHome) {
+                loadingIndicator.style.display = 'flex';
+                try {
+                    const topAlbums = await getTopAlbums();
+                    await renderAlbums(topAlbums, false);
+                } catch (error) {
+                    errorMessage.textContent = 'Error loading top albums. Please try again.';
+                    errorMessage.style.display = 'block';
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                }
+            }
+        });
+    });
+
+    // Add event listener for cart functionality
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.add-to-cart')) {
+            const album = e.target.closest('.album');
+            const albumTitle = album.querySelector('.album-title').textContent;
+            const price = album.querySelector('.album-price').textContent;
+            alert(`Added to cart: ${albumTitle} - ${price}`);
+        }
+    });
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', async () => {
+        // Check for search query first
+        checkForSearchQuery();
+        
+        // Only load top albums if there's no search query
+        if (!window.location.search) {
+            loadingIndicator.style.display = 'flex';
+            try {
+                const topAlbums = await getTopAlbums();
+                await renderAlbums(topAlbums, false);
+            } catch (error) {
+                errorMessage.textContent = 'Error loading albums. Please refresh the page.';
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+    });
+</script>
+</body>
+</html>
